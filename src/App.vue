@@ -1,105 +1,7 @@
 <template>
   <div id="app">
-    <div class="container">
-      <nav class="navbar">
-        <div class="navbar-brand">
-          <router-link :to="{ name: 'Home' }" class="navbar-item">
-            <img src="./assets/logo.png" alt="logo" width="28" height="28" style="margin-right: 6px">
-            <h1 class="heading title"></h1>
-            <h1 class="heading title is-4">Chatangle (Beta)</h1>
-          </router-link>
-          <div class="navbar-burger" v-bind:class="{ 'is-active': navVisible }" @click="navVisible = !navVisible">
-            <span></span>
-            <span></span>
-            <span></span>
-          </div>
-        </div>
-        <div class="navbar-menu" v-bind:class="{ 'is-active': navVisible }">
-          <div class="navbar-start">
 
-          </div>
-          <div class="navbar-end">
-            <a href="https://github.com/pRizz/Chatangle" class="navbar-item" target="_blank">
-              <span class="icon">
-                <i class="fa fa-github" style="font-size: 24px"></i>
-              </span>
-              <span>&nbsp;Github</span>
-            </a>
-
-            <div class="navbar-item">
-              {{ clientCount.toLocaleString() }} Users Online
-            </div>
-            <div class="navbar-item">
-              <b-dropdown @change="connectToIOTA" v-model="iota.provider" position="is-bottom-left">
-
-                <button type="button" slot="trigger" class="button" :class="{
-                    'is-loading': iota.status === 'Connecting',
-                    'is-primary-purple': iota.status === 'Connected',
-                    'is-danger': iota.status === 'Failed'}">
-                  <span> {{ this.iota.status }} </span>
-                  <span class="icon">
-                    <i class="material-icons">arrow_drop_down</i>
-                  </span>
-                </button>
-
-                <b-dropdown-item custom>
-                  <h1 class="title is-6">Latest Milestone:</h1>
-                  <b-field class="subtitle">
-                    <b-input expanded spellcheck="false" readonly :value="iota.latestMilestone"></b-input>
-                    <p class="control">
-                      <button class="button is-primary-purple" v-clipboard:copy="iota.latestMilestone">Copy</button>
-                    </p>
-                  </b-field>
-                </b-dropdown-item>
-                <b-dropdown-item custom>
-                  <h1 class="title is-6">Latest Solid Milestone:</h1>
-                  <b-field class="subtitle">
-                    <b-input expanded spellcheck="false" readonly :value="iota.latestSolidMilestone"></b-input>
-                    <p class="control">
-                      <button class="button is-primary-purple" v-clipboard:copy="iota.latestSolidMilestone">Copy</button>
-                    </p>
-                  </b-field>
-                </b-dropdown-item>
-                <b-dropdown-item custom>
-                  Node version: <b>{{ iota.version || "..." }}</b>
-                </b-dropdown-item>
-                <b-dropdown-item custom>
-                  Node health: <b>{{ providerHealth }}</b>
-                </b-dropdown-item>
-                <hr class="dropdown-divider">
-                <div v-for="prov in providerList">
-                  <b-dropdown-item :value="prov">
-                    <div class="media">
-                      <span v-if="prov.includes('https:')" class="media-left icon">
-                        <i class="material-icons">lock</i>
-                      </span>
-                      <span v-else class="media-left icon">
-                        <i class="material-icons">public</i>
-                      </span>
-                      <div class="media-content">
-                        <h3>{{ prov }}</h3>
-                      </div>
-                    </div>
-                  </b-dropdown-item>
-                </div>
-                <b-dropdown-item custom>
-                  <h1 class="title is-6">Custom Provider:</h1>
-                  <b-field class="subtitle">
-                    <b-input expanded spellcheck="false" v-model.sync="customProvider"></b-input>
-                    <p class="control">
-                      <button class="button is-primary-purple" @click="addProvider">Add</button>
-                    </p>
-                  </b-field>
-                </b-dropdown-item>
-              </b-dropdown>
-
-            </div>
-          </div>
-        </div>
-      </nav>
-    </div>
-
-    <router-view :iota="iota.link" :channel-controller="channelController" :message-sender-delegate="this" :isWebGL2Supported="this.isWebGL2Supported"></router-view>
+    <router-view :iota="iota.link" :channel-controller="channelController" :message-sender-delegate="this" :isWebGL2Supported="this.isWebGL2Supported" :user="user"></router-view>
 
     <footer class="footer">
       <div class="container">
@@ -152,7 +54,7 @@
       </div>
     </footer>
 
-    <b-modal :active.sync="isProviderModalActive">
+    <!-- <b-modal :active.sync="isProviderModalActive">
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">Changing IOTA Server</p>
@@ -172,7 +74,7 @@
           <button class="button" @click="closeModal">Cancel</button>
         </footer>
       </div>
-    </b-modal>
+    </b-modal> -->
 
   </div>
 </template>
@@ -189,7 +91,7 @@
 
   let localAttachToTangle = null
 
-  const chatangleBackendURL = `${process.env.IS_CHATANGLE_BACKEND_SECURED ? 'wss' : 'ws'}://${process.env.CHATANGLE_BACKEND_IP}:${process.env.CHATANGLE_BACKEND_PORT}`
+  const chatangleBackendURL = `${process.env.IS_CHATANGLE_BACKEND_SECURED ? 'ws' : 'ws'}://${process.env.CHATANGLE_BACKEND_IP}:${process.env.CHATANGLE_BACKEND_PORT}`
   let messageKeyCount = 0
 
   function getDefaultMessage() {
@@ -205,29 +107,10 @@
   // public node list from IOTA's mainnet nodes, https://iotasupport.com/providers.json, and http://iotanode.host/
   let defaultProviderList = [
     // http nodes
-    'http://eugene.iota.community:14265',
-    'http://node01.iotatoken.nl:14265',
-    'http://node02.iotatoken.nl:14265',
-    'http://node03.iotatoken.nl:14265',
-    'http://mainnet.necropaz.com:14500',
-    'http://node.lukaseder.de:14265',
-    'http://iota-node-nelson.prizziota.com:80',
-    // https nodes
-    'https://iota-node-nelson.prizziota.com:443',
-    'https://iotanode.us:443',
-    'https://iri2-api.iota.fm:443',
-    'https://iri3-api.iota.fm:443',
-    'https://nelson1-api.iota.fm:443',
-    'https://node.iota-community.org:443',
-    'https://node.iota.dance:443',
-    'https://node.neffware.com:443',
-    'https://node1.iotaner.org:443',
-    'https://nodes.iota.cafe:443',
-    'https://wallet1.iota.town:443',
-    'https://wallet2.iota.town:443',
+    'https://nodes.devnet.iota.org:443'
   ]
 
-  let initialProvider = 'https://iota-node-nelson.prizziota.com:443'
+  let initialProvider = 'https://nodes.devnet.iota.org:443'
 
   if(process.env.IOTA_PROVIDERS_JSON) {
     try {
@@ -244,6 +127,7 @@
 
   export default {
     name: 'app',
+    props: ['user'],
     data () {
       let globalChannel = {
         name: 'Global',
@@ -607,4 +491,3 @@
     }
   }
 </script>
-

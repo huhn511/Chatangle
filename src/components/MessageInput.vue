@@ -16,23 +16,24 @@
             style="bottom: 8px; right: 12px; position: absolute"
             @click="pickerHidden = !pickerHidden"
           >
-            <emoji emoji="smiley"></emoji>
+            <!-- <emoji emoji="smiley"></emoji> -->
           </span>
-          <picker
+          <!-- <picker
             style="position: absolute; right: 0px;"
             set="apple"
             @select="addEmoji"
             v-bind:class="{ 'is-hidden': pickerHidden }"
-          ></picker>
+          ></picker> -->
         </p>
       </div>
       <nav class="level">
         <div class="level-left">
           <div class="level-item">
-            <b-tooltip label="Your browser or device does not support WebGL2, which is required to send messages to the tangle. Try using Google Chrome." multilined :active="!isWebGL2Supported">
-              <a class="button is-info" :disabled="isSendingMessage || !isWebGL2Supported" :class="{'is-loading': isSendingMessage}"
-                 v-on:click="sendMessage()">{{sendButtonText}}</a>
-            </b-tooltip>
+            <!-- <b-tooltip label="Your browser or device does not support WebGL2, which is required to send messages to the tangle. Try using Google Chrome." multilined :active="!isWebGL2Supported">
+
+            </b-tooltip> -->
+            <a class="button is-info" :disabled="isSendingMessage || !isWebGL2Supported" :class="{'is-loading': isSendingMessage}"
+               v-on:click="sendMessage()">{{sendButtonText}}</a>
           </div>
           <div class="level-item has-text-grey">
             {{ buttonTipText }}
@@ -49,7 +50,6 @@
 
 <script>
   import { Picker, Emoji } from 'emoji-mart-vue'
-  import BTooltip from 'buefy/src/components/tooltip/Tooltip.vue'
 
   const readyStates = {
     notSending: 'notSending',
@@ -57,17 +57,17 @@
     sendingFailed: 'sendingFailed'
   }
 
+
   export default {
     name: 'message-input',
-    props: ['messageSenderDelegate', 'isWebGL2Supported'],
+    props: ['user', 'messageSenderDelegate', 'isWebGL2Supported'],
     components: {
-      BTooltip,
       picker: Picker,
       emoji: Emoji
     },
     data () {
       return {
-        name: '',
+        name: this.user.name,
         messageText: '',
         readyStates: readyStates,
         readyState: readyStates.notSending,

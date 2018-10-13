@@ -30,7 +30,7 @@
 
     </div>
 
-    <b-modal :active.sync="isNewChannelModalActive">
+    <!-- <b-modal :active.sync="isNewChannelModalActive">
       <div class="modal-card">
         <header class="modal-card-head">
           <p class="modal-card-title">New Private Channel</p>
@@ -55,7 +55,7 @@
           <button class="button" @click="closeModal">Cancel</button>
         </footer>
       </div>
-    </b-modal>
+    </b-modal> -->
   </div>
 </template>
 

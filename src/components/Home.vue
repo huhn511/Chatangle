@@ -36,7 +36,7 @@
 
             <div class="tile is-parent is-8 is-vertical">
               <article class="tile is-child content" style="flex-grow: 0;">
-                  <message-input :message-sender-delegate="messageSenderDelegate" :isWebGL2Supported="isWebGL2Supported"></message-input>
+                  <message-input :message-sender-delegate="messageSenderDelegate" :isWebGL2Supported="isWebGL2Supported" :user="user"></message-input>
               </article>
               <article class="tile is-child content">
                   <channel-chatroom :channel="channelController.getActiveChannel()"></channel-chatroom>
@@ -73,9 +73,6 @@
       ChannelChatroom,
       MessageInput},
     name: 'home',
-    props: ['iota', 'channelController', 'messageSenderDelegate', 'isWebGL2Supported'],
+    props: ['iota', 'channelController', 'messageSenderDelegate', 'isWebGL2Supported', 'user'],
   }
 </script>
-
-<style scoped>
-</style>
